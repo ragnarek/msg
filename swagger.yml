@@ -1,0 +1,134 @@
+swagger: '2.0'
+info:
+  title: Messagess API
+  description: Create and read messages
+  version: "1.0.0"
+host: "localhos:5000"
+schemes:
+  - http
+basePath: /
+produces:
+  - application/json
+paths:
+  /{channel}/:
+    get:
+      summary: List messages on a channel
+      description: |
+        List all messages on a specific channel
+      parameters:
+        - name: channel
+          in: path
+          description: The channel to get messages from
+          type: string
+          required: true
+        - name: from
+          in: query
+          description: Earliest timestamp (in ms) to list messages from
+          required: false
+          type: number
+          format: long
+        - name: to
+          in: query
+          description: Earliest timestamp (in ms) to list messages from
+          required: false
+          type: number
+          format: long
+      tags:
+        - channel
+      responses:
+        200:
+          description: An array of messages
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Message'
+        default:
+          description: Not found error
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      summary: Create a message
+      description: Create a new message on this specific channel. The channel is created if it doesn't exists.
+      parameters:
+        - name: channel
+          in: path
+          description: The channel to post messages to
+          type: string
+          required: true
+        - name: message
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Message/properties/message'
+      tags:
+        - channel
+      responses:
+        201:
+          description: Confirmation of a created message
+        default:
+          description: Bad request error
+          schema:
+            $ref: '#/definitions/Error'
+  /{channel}/{message_id}:
+    get:
+      summary: Get message by id
+      description: Get message by id
+      parameters:
+        - name: channel
+          in: path
+          description: The channel to get messages from
+          type: string
+          required: true
+        - name: message_id
+          in: path
+          description: The message id
+          type: string
+          required: true
+        - name: from
+          in: query
+          description: Earliest timestamp (in ms) to list messages from
+          required: false
+          type: number
+          format: long
+        - name: to
+          in: query
+          description: Earliest timestamp (in ms) to list messages from
+          required: false
+          type: number
+          format: long
+      tags:
+        - channel, message
+      responses:
+        200:
+          description: An array of messages
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Message'
+        default:
+          description: Not found error
+          schema:
+            $ref: '#/definitions/Error'
+
+definitions:
+  Message:
+    type: object
+    properties:
+      id:
+        type: string
+        description: Hex representation of a UUID4
+      time:
+        type: number
+        format: long
+        description: |
+          Timestamp in milliseconds when the message was created
+      message:
+        description: Json message.
+  Error:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
