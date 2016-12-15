@@ -3,10 +3,10 @@ storage = {}
 def add(channel, message):
 	if channel in storage:
 		storage[channel].append(message)
-		return len(storage[channel])
+		return message
 	else:
 		storage[channel] = [message]
-		return 1
+		return message
 
 def get(channel, fromDate=None, toDate=None):
 	if channel in storage:
